@@ -22,8 +22,8 @@ export const registerUser = async (
 
     user = new User({
       email,
-      name,
       password,
+      name,
       avatar: avatar || "",
     });
 
