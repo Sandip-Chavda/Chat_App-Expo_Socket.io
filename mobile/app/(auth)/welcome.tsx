@@ -12,7 +12,7 @@ const WelcomeScreen = () => {
   const router = useRouter();
 
   return (
-    <ScreenWrapper showPattern>
+    <ScreenWrapper showPattern bgOpacity={0.5}>
       <View style={styles.container}>
         <View style={{ alignItems: "center" }}>
           <Typo color={colors.white} size={43} fontWeight={"900"}>
