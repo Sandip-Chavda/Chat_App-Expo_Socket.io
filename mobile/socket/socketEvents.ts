@@ -15,3 +15,19 @@ export function testSocket(payload: any, off: boolean = false) {
     socket.emit("testSocket", payload);
   }
 }
+
+export function updateProfile(payload: any, off: boolean = false) {
+  const socket = getSocket();
+  if (!socket) {
+    console.log("Socket is not sonnected frontend,");
+    return;
+  }
+
+  if (off) {
+    socket.off("updateProfile", payload);
+  } else if (typeof payload == "function") {
+    socket.on("updateProfile", payload);
+  } else {
+    socket.emit("updateProfile", payload);
+  }
+}

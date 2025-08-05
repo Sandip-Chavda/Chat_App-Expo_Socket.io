@@ -1,29 +1,30 @@
+import Avatar from "@/components/Avatar";
+import BackButton from "@/components/BackButton";
+import Button from "@/components/Button";
+import Header from "@/components/Header";
+import Input from "@/components/Input";
+import ScreenWrapper from "@/components/ScreenWrapper";
+import Typo from "@/components/Typo";
+import { colors, spacingX, spacingY } from "@/constants/theme";
+import { useAuth } from "@/context/authContext";
+import { updateProfile } from "@/socket/socketEvents";
+import { UserDataProps } from "@/types";
+import { scale, verticalScale } from "@/utils/styling";
+import * as ImagePicker from "expo-image-picker";
+import { useRouter } from "expo-router";
+import * as Icons from "phosphor-react-native";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import { colors, spacingX, spacingY } from "@/constants/theme";
-import { scale, verticalScale } from "@/utils/styling";
-import ScreenWrapper from "@/components/ScreenWrapper";
-import Header from "@/components/Header";
-import * as Icons from "phosphor-react-native";
-import BackButton from "@/components/BackButton";
-import Avatar from "@/components/Avatar";
-import Typo from "@/components/Typo";
-import Input from "@/components/Input";
-import { useAuth } from "@/context/authContext";
-import { UserDataProps } from "@/types";
-import Button from "@/components/Button";
-import { useRouter } from "expo-router";
 
 const ProfileModal = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, updateToken } = useAuth();
   const router = useRouter();
 
   const [userData, setUserData] = useState<UserDataProps>({
@@ -34,6 +35,26 @@ const ProfileModal = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    updateProfile(processUpdateProfile);
+
+    return () => {
+      updateProfile(processUpdateProfile, true);
+    };
+  }, []);
+
+  const processUpdateProfile = (res: any) => {
+    console.log("Got Response : ", res);
+    setLoading(false);
+
+    if (res.success) {
+      updateToken(res.data.token);
+      router.back();
+    } else {
+      Alert.alert("User Profile", res.msg);
+    }
+  };
+
+  useEffect(() => {
     setUserData({
       name: user?.name || "",
       email: user?.email || "",
@@ -41,7 +62,23 @@ const ProfileModal = () => {
     });
   }, [user]);
 
-  const onSubmit = async () => {};
+  const onSubmit = async () => {
+    let { name, avatar } = userData;
+
+    if (!name.trim()) {
+      Alert.alert("Update User", "Please enter your name");
+      return;
+    }
+
+    let data = {
+      name,
+      avatar,
+    };
+
+    setLoading(true);
+
+    updateProfile(data);
+  };
 
   const handleLogout = async () => {
     router.back();
@@ -62,6 +99,21 @@ const ProfileModal = () => {
     ]);
   };
 
+  const onPickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [4, 6],
+      quality: 0.5,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setUserData({ ...userData, avatar: result.assets[0] });
+    }
+  };
+
   return (
     <ScreenWrapper isModal>
       <View style={styles.container}>
@@ -75,8 +127,8 @@ const ProfileModal = () => {
 
         <ScrollView contentContainerStyle={styles.form}>
           <View style={styles.avatarContainer}>
-            <Avatar uri={null} size={170} />
-            <TouchableOpacity style={styles.edition}>
+            <Avatar uri={userData.avatar} size={170} />
+            <TouchableOpacity style={styles.edition} onPress={onPickImage}>
               <Icons.PencilIcon
                 size={verticalScale(20)}
                 color={colors.neutral800}
