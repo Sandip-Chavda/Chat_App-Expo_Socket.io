@@ -22,11 +22,11 @@ const CONVERSATIONS = [
   {
     name: "Alice",
     type: "direct",
-    lastMessage: {
-      senderName: "Alice",
-      content: "How, Are you there?",
-      createdAt: "2025-06-22T18:45:002",
-    },
+    // lastMessage: {
+    //   senderName: "Alice",
+    //   content: "How, Are you there?",
+    //   createdAt: "2025-06-22T18:45:002",
+    // },
   },
   {
     name: "Project Team",
