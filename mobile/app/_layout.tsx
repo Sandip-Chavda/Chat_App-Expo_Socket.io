@@ -7,7 +7,11 @@ const StackLayout = () => {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen
         name="(main)/profileModal"
-        options={{ presentation: "modal" }}
+        options={{ presentation: "formSheet" }} //modal
+      />
+      <Stack.Screen
+        name="(main)/newConversationModal"
+        options={{ presentation: "formSheet" }} //modal
       />
     </Stack>
   );

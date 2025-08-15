@@ -25,7 +25,7 @@ const CONVERSATIONS = [
     // lastMessage: {
     //   senderName: "Alice",
     //   content: "How, Are you there?",
-    //   createdAt: "2025-06-22T18:45:002",
+    //   createdAt: "2025-06-22T18:45:02Z",
     // },
   },
   {
@@ -34,7 +34,7 @@ const CONVERSATIONS = [
     lastMessage: {
       senderName: "Sandip",
       content: "Boss is here...",
-      createdAt: "2025-06-22T18:45:002",
+      createdAt: "2025-06-22T18:45:02Z",
     },
   },
   {
@@ -43,7 +43,7 @@ const CONVERSATIONS = [
     lastMessage: {
       senderName: "Tango",
       content: "Be aware of charlie.",
-      createdAt: "2025-06-22T18:45:002",
+      createdAt: "2025-06-22T18:45:02Z",
     },
   },
   {
@@ -52,7 +52,7 @@ const CONVERSATIONS = [
     lastMessage: {
       senderName: "Mummy",
       content: "Happy Birthday",
-      createdAt: "2025-06-22T18:45:002",
+      createdAt: "2025-06-22T18:45:02Z",
     },
   },
   {
@@ -61,7 +61,7 @@ const CONVERSATIONS = [
     lastMessage: {
       senderName: "Charlie",
       content: "Thanks",
-      createdAt: "2025-06-22T18:45:002",
+      createdAt: "2025-06-22T18:45:02Z",
     },
   },
 ];
