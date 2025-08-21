@@ -19,7 +19,7 @@ import Typo from "@/components/Typo";
 import { useAuth } from "@/context/authContext";
 import Button from "@/components/Button";
 import { verticalScale } from "@/utils/styling";
-import { getContacts } from "@/socket/socketEvents";
+import { getContacts, newConversation } from "@/socket/socketEvents";
 
 // const CONTACTS = [
 //   {
@@ -99,17 +99,39 @@ const NewConversationModal = () => {
 
   useEffect(() => {
     getContacts(processGetContacts);
+    newConversation(processNewConversation);
     getContacts(null);
 
     return () => {
       getContacts(processGetContacts, true);
+      newConversation(processNewConversation, true);
     };
   }, []);
 
   const processGetContacts = (res: any) => {
-    console.log("Got Contacts:---", res);
+    // console.log("Got Contacts:---", res);
     if (res?.success) {
       setContacts(res.data);
+    }
+  };
+
+  const processNewConversation = (res: any) => {
+    // console.log("Got New Conversation Results:---", res);
+    if (res?.success) {
+      router.back();
+      router.push({
+        pathname: "/(main)/conversation",
+        params: {
+          id: res.data._id,
+          name: res.data.name,
+          avatar: res.data.avatar,
+          type: res.data.type,
+          participants: JSON.stringify(res.data.participants),
+        },
+      });
+    } else {
+      Alert.alert("Error", res?.msg || "Failed to create conversation.");
+      console.error("Error creating conversation:", res?.msg);
     }
   };
 
@@ -147,6 +169,10 @@ const NewConversationModal = () => {
     if (isGroupMode) {
       toggleParticipant(user);
     } else {
+      newConversation({
+        type: "direct",
+        participants: [currentUser.id, user.id],
+      });
     }
   };
 

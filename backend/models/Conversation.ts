@@ -4,7 +4,7 @@ import { ConversationProps } from "../types";
 const ConversationSchema = new Schema<ConversationProps>({
   type: {
     type: String,
-    enum: ["private", "group"],
+    enum: ["direct", "group"],
     required: true,
   },
   name: String,
