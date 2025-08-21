@@ -20,6 +20,7 @@ import { useAuth } from "@/context/authContext";
 import Button from "@/components/Button";
 import { verticalScale } from "@/utils/styling";
 import { getContacts, newConversation } from "@/socket/socketEvents";
+import { uploadFileToCloudinary } from "@/services/imageService";
 
 // const CONTACTS = [
 //   {
@@ -116,7 +117,8 @@ const NewConversationModal = () => {
   };
 
   const processNewConversation = (res: any) => {
-    // console.log("Got New Conversation Results:---", res);
+    console.log("Got New Conversation Results:---", res);
+    setIsLoading(false);
     if (res?.success) {
       router.back();
       router.push({
@@ -179,6 +181,31 @@ const NewConversationModal = () => {
   const createGroup = async () => {
     if (!groupName.trim() || !currentUser || selectedParticipants.length < 2)
       return;
+
+    setIsLoading(true);
+    try {
+      let avatar = null;
+
+      if (groupAvatar) {
+        const uploadResult = await uploadFileToCloudinary(
+          groupAvatar,
+          "group-avatars"
+        );
+        if (uploadResult.success) avatar = uploadResult.data;
+      }
+
+      newConversation({
+        type: "group",
+        participants: [currentUser.id, ...selectedParticipants],
+        name: groupName,
+        avatar,
+      });
+    } catch (error) {
+      console.error("Error creating group:", error);
+      Alert.alert("Error", "Failed to create group. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
