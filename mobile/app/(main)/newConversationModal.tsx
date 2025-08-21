@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import { colors, radius, spacingX, spacingY } from "@/constants/theme";
@@ -19,68 +19,69 @@ import Typo from "@/components/Typo";
 import { useAuth } from "@/context/authContext";
 import Button from "@/components/Button";
 import { verticalScale } from "@/utils/styling";
+import { getContacts } from "@/socket/socketEvents";
 
-const CONTACTS = [
-  {
-    id: "1",
-    name: "Sandip",
-    avatar:
-      "https://png.pngtree.com/recommend-works/png-clipart/20240723/ourmid/pngtree-15-august-happy-independence-day-india-design-png-image_13165912.png",
-  },
-  {
-    id: "2",
-    name: "Miral",
-    avatar: "https://icon2.cleanpng.com/lnd/20240503/qlp/aa4hyi3tj.webp",
-  },
-  {
-    id: "3",
-    name: "Mummy",
-    avatar:
-      "https://w7.pngwing.com/pngs/788/902/png-transparent-krishna-and-radha-krishna-janmashtami-radha-krishna-desktop-krishna-religion-tradition-holi-thumbnail.png",
-  },
-  {
-    id: "4",
-    name: "Papa",
-    avatar:
-      "https://w7.pngwing.com/pngs/966/404/png-transparent-lord-shiva-and-hanuman-s-parvati-shiva-ganesha-shakti-lingam-shiva-desktop-wallpaper-religion-tradition-thumbnail.png",
-  },
-  {
-    id: "5",
-    name: "Neighbor",
-    avatar:
-      "https://e7.pngegg.com/pngimages/871/704/png-clipart-ghibli-museum-apple-iphone-7-plus-studio-ghibli-my-neighbor-totoro-animated-film-animadora-dibujo-mammal-food-thumbnail.png",
-  },
-  {
-    id: "6",
-    name: "Professor",
-    avatar:
-      "https://e7.pngegg.com/pngimages/281/873/png-clipart-cartoon-professor-miscellaneous-mammal-thumbnail.png",
-  },
-  {
-    id: "7",
-    name: "Friend",
-    avatar:
-      "https://w7.pngwing.com/pngs/317/848/png-transparent-happy-sunshine-cartoon-smile-sun-thumbnail.png",
-  },
-  {
-    id: "8",
-    name: "Help",
-    avatar:
-      "https://e7.pngegg.com/pngimages/381/746/png-clipart-customer-service-technical-support-help-desk-customer-support-management-miscellaneous-service-thumbnail.png",
-  },
-  {
-    id: "9",
-    name: "Trouble Maker",
-    avatar:
-      "https://e7.pngegg.com/pngimages/626/501/png-clipart-cute-halloween-candy-to-children-happy-halloween-mammal-thumbnail.png",
-  },
-  {
-    id: "10",
-    name: "Stranger",
-    avatar:
-      "https://e7.pngegg.com/pngimages/153/673/png-clipart-uncle-sam-index-finger-we-want-you-love-white-thumbnail.png",
-  },
-];
+// const CONTACTS = [
+//   {
+//     id: "1",
+//     name: "Sandip",
+//     avatar:
+//       "https://png.pngtree.com/recommend-works/png-clipart/20240723/ourmid/pngtree-15-august-happy-independence-day-india-design-png-image_13165912.png",
+//   },
+//   {
+//     id: "2",
+//     name: "Miral",
+//     avatar: "https://icon2.cleanpng.com/lnd/20240503/qlp/aa4hyi3tj.webp",
+//   },
+//   {
+//     id: "3",
+//     name: "Mummy",
+//     avatar:
+//       "https://w7.pngwing.com/pngs/788/902/png-transparent-krishna-and-radha-krishna-janmashtami-radha-krishna-desktop-krishna-religion-tradition-holi-thumbnail.png",
+//   },
+//   {
+//     id: "4",
+//     name: "Papa",
+//     avatar:
+//       "https://w7.pngwing.com/pngs/966/404/png-transparent-lord-shiva-and-hanuman-s-parvati-shiva-ganesha-shakti-lingam-shiva-desktop-wallpaper-religion-tradition-thumbnail.png",
+//   },
+//   {
+//     id: "5",
+//     name: "Neighbor",
+//     avatar:
+//       "https://e7.pngegg.com/pngimages/871/704/png-clipart-ghibli-museum-apple-iphone-7-plus-studio-ghibli-my-neighbor-totoro-animated-film-animadora-dibujo-mammal-food-thumbnail.png",
+//   },
+//   {
+//     id: "6",
+//     name: "Professor",
+//     avatar:
+//       "https://e7.pngegg.com/pngimages/281/873/png-clipart-cartoon-professor-miscellaneous-mammal-thumbnail.png",
+//   },
+//   {
+//     id: "7",
+//     name: "Friend",
+//     avatar:
+//       "https://w7.pngwing.com/pngs/317/848/png-transparent-happy-sunshine-cartoon-smile-sun-thumbnail.png",
+//   },
+//   {
+//     id: "8",
+//     name: "Help",
+//     avatar:
+//       "https://e7.pngegg.com/pngimages/381/746/png-clipart-customer-service-technical-support-help-desk-customer-support-management-miscellaneous-service-thumbnail.png",
+//   },
+//   {
+//     id: "9",
+//     name: "Trouble Maker",
+//     avatar:
+//       "https://e7.pngegg.com/pngimages/626/501/png-clipart-cute-halloween-candy-to-children-happy-halloween-mammal-thumbnail.png",
+//   },
+//   {
+//     id: "10",
+//     name: "Stranger",
+//     avatar:
+//       "https://e7.pngegg.com/pngimages/153/673/png-clipart-uncle-sam-index-finger-we-want-you-love-white-thumbnail.png",
+//   },
+// ];
 
 const NewConversationModal = () => {
   const { user: currentUser } = useAuth();
@@ -88,12 +89,29 @@ const NewConversationModal = () => {
   const { isGroup } = useLocalSearchParams();
   const isGroupMode = isGroup == "1";
 
+  const [contacts, setContacts] = useState([]);
   const [groupAvatar, setGroupAvatar] = useState<{ uri: string } | null>(null);
   const [groupName, setGroupName] = useState("");
   const [selectedParticipants, setSelectedParticipants] = useState<string[]>(
     []
   );
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    getContacts(processGetContacts);
+    getContacts(null);
+
+    return () => {
+      getContacts(processGetContacts, true);
+    };
+  }, []);
+
+  const processGetContacts = (res: any) => {
+    console.log("Got Contacts:---", res);
+    if (res?.success) {
+      setContacts(res.data);
+    }
+  };
 
   const onPickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -167,7 +185,7 @@ const NewConversationModal = () => {
           contentContainerStyle={styles.contactList}
           showsVerticalScrollIndicator={false}
         >
-          {CONTACTS.map((user: any, index) => {
+          {contacts.map((user: any, index) => {
             const isSelected = selectedParticipants.includes(user.id);
 
             return (
